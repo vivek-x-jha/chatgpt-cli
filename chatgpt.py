@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python3
 
 import atexit
 import click
@@ -26,12 +26,8 @@ BASE = Path(xdg_config_home(), "chatgpt-cli")
 CONFIG_FILE = BASE / "config.yaml"
 HISTORY_FILE = BASE / "history"
 SAVE_FOLDER = BASE / "session-history"
-SAVE_FILE = (
-    "chatgpt-session-" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".json"
-)
-OPENAI_BASE_ENDPOINT = os.environ.get(
-    "OPENAI_BASE_ENDPOINT", "https://api.openai.com/v1"
-)
+SAVE_FILE =f'chatgpt-session-{datetime.datetime.now().strftime("%Y%m%d-%H%M%S")}.json'
+OPENAI_BASE_ENDPOINT = os.environ.get("OPENAI_BASE_ENDPOINT", "https://api.openai.com/v1")
 ENV_VAR = "OPENAI_API_KEY"
 
 # Azure price is not accurate, it depends on your subscription
@@ -63,7 +59,6 @@ logging.basicConfig(
         RichHandler(show_time=False, show_level=False, show_path=False, markup=True)
     ],
 )
-
 
 # Initialize the messages history list
 # It's mandatory to pass it at each API call in order to have a conversation
@@ -105,7 +100,7 @@ def load_config(config_file: str) -> dict:
         os.makedirs(os.path.dirname(config_file), exist_ok=True)
         with open(config_file, "w", encoding="utf-8") as file:
             yaml.dump(DEFAULT_CONFIG, file, default_flow_style=False)
-        logger.info(f"New config file initialized: [green bold]{config_file}")
+        logger.info(f"New config file initialized: [green]{config_file}")
 
     # Load existing config
     with open(config_file, encoding="utf-8") as file:
@@ -149,9 +144,7 @@ def create_save_folder() -> None:
         os.mkdir(SAVE_FOLDER)
 
 
-def save_history(
-    model: str, messages: list, prompt_tokens: int, completion_tokens: int
-) -> None:
+def save_history(model: str, messages: list, prompt_tokens: int, completion_tokens: int) -> None:
     """
     Save the conversation history in JSON format
     """
@@ -201,7 +194,7 @@ def display_expense(model: str) -> None:
     Given the model used, display total tokens used and estimated expense
     """
     logger.info(
-        f"\nTotal tokens used: [green bold]{prompt_tokens + completion_tokens}",
+        f"\nTotal tokens used: [green]{prompt_tokens + completion_tokens}",
         extra={"highlighter": None},
     )
 
@@ -213,12 +206,12 @@ def display_expense(model: str) -> None:
             PRICING_RATE[model]["completion"],
         )
         logger.info(
-            f"Estimated expense: [green bold]${total_expense}",
+            f"Estimated expense: [green]${total_expense}",
             extra={"highlighter": None},
         )
     else:
         logger.warning(
-            f"[red bold]No expense estimate available for model {model}",
+            f"[red]No expense estimate available for model {model}",
             extra={"highlighter": None},
         )
 
@@ -268,12 +261,7 @@ def print_markdown(content: str, code_blocks: Optional[dict] = None):
         console.print(Markdown("\n".join(regular_content)))
 
 
-def start_prompt(
-    session: PromptSession,
-    config: dict,
-    copyable_blocks: Optional[dict],
-    proxy: dict | None,
-) -> None:
+def start_prompt(session: PromptSession, config: dict, copyable_blocks: Optional[dict], proxy: dict | None) -> None:
     """
     Ask the user for input, build the request and perform it
     """
@@ -287,7 +275,7 @@ def start_prompt(
         message = sys.stdin.read()
     else:
         message = session.prompt(
-            HTML(f"<b>[{prompt_tokens + completion_tokens}] >>> </b>")
+            HTML(f'<p>[{prompt_tokens + completion_tokens}] >>> </p>')
         )
 
     if message.lower().strip() == "/q":
@@ -369,13 +357,13 @@ def start_prompt(
             )
     except requests.ConnectionError:
         logger.error(
-            "[red bold]Connection error, try again...", extra={"highlighter": None}
+            "[red]Connection error, try again...", extra={"highlighter": None}
         )
         messages.pop()
         raise KeyboardInterrupt
     except requests.Timeout:
         logger.error(
-            "[red bold]Connection timed out, try again...", extra={"highlighter": None}
+            "[red]Connection timed out, try again...", extra={"highlighter": None}
         )
         messages.pop()
         raise KeyboardInterrupt
@@ -411,21 +399,21 @@ def start_prompt(
             if "error" in response:
                 if response["error"]["code"] == "context_length_exceeded":
                     logger.error(
-                        "[red bold]Maximum context length exceeded",
+                        "[red]Maximum context length exceeded",
                         extra={"highlighter": None},
                     )
                     raise EOFError
                     # TODO: Develop a better strategy to manage this case
-            logger.error("[red bold]Invalid request", extra={"highlighter": None})
+            logger.error("[red]Invalid request", extra={"highlighter": None})
             raise EOFError
 
         case 401:
-            logger.error("[red bold]Invalid API Key", extra={"highlighter": None})
+            logger.error("[red]Invalid API Key", extra={"highlighter": None})
             raise EOFError
 
         case 429:
             logger.error(
-                "[red bold]Rate limit or maximum monthly limit exceeded",
+                "[red]Rate limit or maximum monthly limit exceeded",
                 extra={"highlighter": None},
             )
             messages.pop()
@@ -433,7 +421,7 @@ def start_prompt(
 
         case 500:
             logger.error(
-                "[red bold]Internal server error, check https://status.openai.com",
+                "[red]Internal server error, check https://status.openai.com",
                 extra={"highlighter": None},
             )
             messages.pop()
@@ -441,7 +429,7 @@ def start_prompt(
 
         case 502 | 503:
             logger.error(
-                "[red bold]The server seems to be overloaded, try again",
+                "[red]The server seems to be overloaded, try again",
                 extra={"highlighter": None},
             )
             messages.pop()
@@ -449,7 +437,7 @@ def start_prompt(
 
         case _:
             logger.error(
-                f"[red bold]Unknown error, status code {r.status_code}",
+                f"[red]Unknown error, status code {r.status_code}",
                 extra={"highlighter": None},
             )
             logger.error(r.json(), extra={"highlighter": None})
@@ -493,7 +481,7 @@ def main(
     if non_interactive:
         logger.setLevel("ERROR")
 
-    logger.info("[bold]ChatGPT CLI", extra={"highlighter": None})
+    logger.info("[green]ChatGPT CLI", extra={"highlighter": None})
 
     history = FileHistory(HISTORY_FILE)
 
@@ -506,7 +494,7 @@ def main(
         config = load_config(CONFIG_FILE)
     except FileNotFoundError:
         logger.error(
-            "[red bold]Configuration file not found", extra={"highlighter": None}
+            "[red]Configuration file not found", extra={"highlighter": None}
         )
         sys.exit(1)
 
@@ -557,9 +545,9 @@ def main(
     atexit.register(display_expense, model=model)
 
     logger.info(
-        f"Supplier: [green bold]{config['supplier']}", extra={"highlighter": None}
+        f"Supplier: [blue]{config['supplier']}", extra={"highlighter": None}
     )
-    logger.info(f"Model in use: [green bold]{model}", extra={"highlighter": None})
+    logger.info(f"Model in use: [magenta]{model}", extra={"highlighter": None})
 
     # Add the system message for code blocks in case markdown is enabled in the config file
     if config["markdown"]:
@@ -569,7 +557,7 @@ def main(
     if context:
         for c in context:
             logger.info(
-                f"Context file: [green bold]{c.name}", extra={"highlighter": None}
+                f"Context file: [yellow]{c.name}", extra={"highlighter": None}
             )
             messages.append({"role": "system", "content": c.read().strip()})
 
@@ -590,17 +578,17 @@ def main(
             prompt_tokens += history_data["prompt_tokens"]
             completion_tokens += history_data["completion_tokens"]
             logger.info(
-                f"Restored session: [bold green]{restore}",
+                f"Restored session: [yellow]{restore}",
                 extra={"highlighter": None},
             )
         except FileNotFoundError:
             logger.error(
-                f"[red bold]File {restore_file} not found", extra={"highlighter": None}
+                f"[red]File {restore_file} not found", extra={"highlighter": None}
             )
 
     if json_mode:
         logger.info(
-            "JSON response mode is active. Your message should contain the [bold]'json'[/bold] word.",
+            "JSON response mode is active. Your message should contain the [yellow]'json'[/yellow] word.",
             extra={"highlighter": None},
         )
 
