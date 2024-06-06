@@ -18,16 +18,8 @@ You may also need to add a payment method, clicking on *Billing --> Payment meth
 
 You need Python (at least version 3.10), Pip and Git installed on your system.
 
-First update Pip (having an older version can cause troubles on some systems):
-
 ```console
-pip install -U pip
-```
-
-Then, the installation is done simply with a single command:
-
-```console
-pip install git+https://github.com/marcolardera/chatgpt-cli
+git clone https://github.com/vivek-x-jha/chatgpt-cli.git
 ```
 
 After that, you need to configure your API Key. There are three alternative ways to provide this parameter:
@@ -78,9 +70,9 @@ Also note that, if you use Azure as a supplier, this pricing may not be accurate
 
 ## Basic usage
 
-Launch the script typing in your terminal:
+Launch the script with a one liner in your terminal:
 
-`chatgpt-cli`
+`python3 "PATH/TO/chatgpt-cli/chatgpt.py"`
 
 Then just chat! The number next to the prompt is the [tokens](https://platform.openai.com/tokenizer) used in the conversation at that point.
 
@@ -146,20 +138,7 @@ JSON Mode is enabled using the `--json` (or `-j`) flag. This forces ChatGPT to a
 
 Also check the [OpenAI Documentation](https://platform.openai.com/docs/guides/text-generation/json-mode).
 
-## External tools
-
-### Copy selection as context (Linux)
+## Copy selection as context (Linux)
 
 On Linux using XWindows, you can conveniently start a chat with any text you have highlighted in any application as the provided context. [This gist](https://gist.github.com/dwymark/df4e77c4e9fc33608bf22f1288d9195e) shows how this can be done on XFCE using `xclip`.
 
-### DALL-E CLI
-
-Check also my other little project [DALL-E CLI](https://github.com/marcolardera/dall-e-cli). The two tools may even be combined together through piping (Asking ChatGPT to create the perfect prompt to feed into DALL-E). Little example:
-
-`echo "Write the perfect prompt for an image generation model in order to represent a man wearing a banana costume" | chatgpt-cli -n | dall-e-cli -p`
-
-It works, despite not being 100% clear if it is useful or not.
-
-## Contributing to this project
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md)
