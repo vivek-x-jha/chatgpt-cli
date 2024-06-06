@@ -1,6 +1,6 @@
 # ChatGPT CLI
 
-![Screenshot](screenshot.png)
+![Screenshot](demonstration.png)
 
 ## Overview
 
